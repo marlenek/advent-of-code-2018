@@ -7,8 +7,8 @@ object SantasSuit {
   def fabricOverlap(claims: Seq[fabric], wide: Int, tall: Int): Int = {
     var fabric = Array.fill(wide+1, tall+1)(0)
     claims.foreach { f =>
-      for (i <- f.left to f.wide + f.left) {
-        for (j <- f.top to f.tall + f.top) {
+      for (i <- f.left to f.wide + f.left-1) {
+        for (j <- f.top to f.tall + f.top-1) {
           fabric(i)(j) += 1
         }
       }
