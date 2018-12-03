@@ -25,10 +25,8 @@ object SantasSuit {
   def createClaimsMatrix(claims: Seq[claim], wide: Int, tall: Int): Array[Array[Int]] = {
     var fabric = Array.fill(wide + 1, tall + 1)(0)
     claims.foreach { f =>
-      for (i <- f.left to f.wide + f.left - 1) {
-        for (j <- f.top to f.tall + f.top - 1) {
-          fabric(i)(j) += 1
-        }
+      for (i <- f.left to f.wide + f.left - 1; j <- f.top to f.tall + f.top - 1) {
+        fabric(i)(j) += 1
       }
     }
     fabric
@@ -36,11 +34,9 @@ object SantasSuit {
 
   def calculateFabricOverlaps(claims: Seq[claim], wide: Int, tall: Int, fabric: Array[Array[Int]]): Int = {
     var result = 0
-    for (i <- 0 to wide) {
-      for (j <- 0 to tall) {
-        if (fabric(i)(j) >= 2)
-          result += 1
-      }
+    for (i <- 0 to wide; j <- 0 to tall) {
+      if (fabric(i)(j) >= 2)
+        result += 1
     }
     result
   }
@@ -48,11 +44,9 @@ object SantasSuit {
   def findNotOverlappingClaim(claims: Seq[claim], wide: Int, tall: Int, fabric: Array[Array[Int]]): Option[Int] = {
     claims.foreach { f =>
       var flag = true
-      for (i <- f.left to f.wide + f.left - 1) {
-        for (j <- f.top to f.tall + f.top - 1) {
-          if (fabric(i)(j) != 1)
-            flag = false
-        }
+      for (i <- f.left to f.wide + f.left - 1; j <- f.top to f.tall + f.top - 1) {
+        if (fabric(i)(j) != 1)
+          flag = false
       }
       if (flag) return Some(f.id)
     }
