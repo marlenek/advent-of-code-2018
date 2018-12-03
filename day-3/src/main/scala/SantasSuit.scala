@@ -22,18 +22,6 @@ object SantasSuit {
     (maxWide, maxTall)
   }
 
-  def calculateFabricOverlaps(claims: Seq[claim], wide: Int, tall: Int): Int = {
-    var fabric = createClaimsMatrix(claims, wide, tall)
-    var result = 0
-    for (i <- 0 to wide) {
-      for (j <- 0 to tall) {
-        if (fabric(i)(j) >= 2)
-          result += 1
-      }
-    }
-    result
-  }
-
   def createClaimsMatrix(claims: Seq[claim], wide: Int, tall: Int): Array[Array[Int]] = {
     var fabric = Array.fill(wide + 1, tall + 1)(0)
     claims.foreach { f =>
@@ -46,8 +34,18 @@ object SantasSuit {
     fabric
   }
 
-  def findNoOverlappingClaim(claims: Seq[claim], wide: Int, tall: Int): Option[Int] = {
-    var fabric = createClaimsMatrix(claims, wide, tall)
+  def calculateFabricOverlaps(claims: Seq[claim], wide: Int, tall: Int, fabric: Array[Array[Int]]): Int = {
+    var result = 0
+    for (i <- 0 to wide) {
+      for (j <- 0 to tall) {
+        if (fabric(i)(j) >= 2)
+          result += 1
+      }
+    }
+    result
+  }
+
+  def findNotOverlappingClaim(claims: Seq[claim], wide: Int, tall: Int, fabric: Array[Array[Int]]): Option[Int] = {
     claims.foreach { f =>
       var flag = true
       for (i <- f.left to f.wide + f.left - 1) {
@@ -64,9 +62,8 @@ object SantasSuit {
   def main(args: Array[String]): Unit = {
     val claims = readClaims("input.txt")
     val fabricSize = calculateFabricSize(claims)
-    var fabric = createClaimsMatrix(claims, fabricSize._1, fabricSize._2)
-    println("Result for part 1: " + calculateFabricOverlaps(claims, fabricSize._1, fabricSize._2))
-    println("Result for part 2: " + findNoOverlappingClaim(claims, fabricSize._1, fabricSize._2))
-
+    var fabricMatrix = createClaimsMatrix(claims, fabricSize._1, fabricSize._2)
+    println("Result for part 1: " + calculateFabricOverlaps(claims, fabricSize._1, fabricSize._2, fabricMatrix))
+    println("Result for part 2: " + findNotOverlappingClaim(claims, fabricSize._1, fabricSize._2, fabricMatrix))
   }
 }
