@@ -4,32 +4,16 @@ import scala.io.Source
 
 object SantasSuit {
 
-  def fabricOverlap(claims: Seq[fabric], wide: Int, tall: Int): Int = {
-    var fabric = Array.fill(wide+1, tall+1)(0)
-    claims.foreach { f =>
-      for (i <- f.left to f.wide + f.left-1) {
-        for (j <- f.top to f.tall + f.top-1) {
-          fabric(i)(j) += 1
-        }
-      }
-    }
-    var result = 0
-    for (i <- 0 to wide ) {
-      for (j <- 0 to tall ) {
-        if (fabric(i)(j) >= 2)
-          result += 1
-      }
-    }
-    result
+  case class claim(id: Int, left: Int, top: Int, wide: Int, tall: Int) {}
+
+  def readClaims(fileName: String): Seq[claim] = {
+    for {
+      line <- Source.fromResource(fileName).getLines().toVector
+      values = line.split("[,:x@#]").map(_.trim)
+    } yield claim(values(1).toInt, values(2).toInt, values(3).toInt, values(4).toInt, values(5).toInt)
   }
 
-  def part2(boxesList: List[String]): String = {
-    ""
-  }
-
-  case class fabric(left: Int, top: Int, wide: Int, tall: Int) {}
-
-  def getFabricSize(claims: Seq[fabric]): (Int, Int) = {
+  def calculateFabricSize(claims: Seq[claim]): (Int, Int) = {
     var maxWide, maxTall = 0;
     claims.foreach { f =>
       if (f.left + f.wide > maxWide) maxWide = f.left + f.wide
@@ -38,16 +22,51 @@ object SantasSuit {
     (maxWide, maxTall)
   }
 
-  def readSales(fileName: String): Seq[fabric] = {
-    for {
-      line <- Source.fromResource(fileName).getLines().toVector
-      values = line.split("[,:x@]").map(_.trim)
-    } yield fabric(values(1).toInt, values(2).toInt, values(3).toInt, values(4).toInt)
+  def calculateFabricOverlaps(claims: Seq[claim], wide: Int, tall: Int): Int = {
+    var fabric = createClaimsMatrix(claims, wide, tall)
+    var result = 0
+    for (i <- 0 to wide) {
+      for (j <- 0 to tall) {
+        if (fabric(i)(j) >= 2)
+          result += 1
+      }
+    }
+    result
+  }
+
+  def createClaimsMatrix(claims: Seq[claim], wide: Int, tall: Int): Array[Array[Int]] = {
+    var fabric = Array.fill(wide + 1, tall + 1)(0)
+    claims.foreach { f =>
+      for (i <- f.left to f.wide + f.left - 1) {
+        for (j <- f.top to f.tall + f.top - 1) {
+          fabric(i)(j) += 1
+        }
+      }
+    }
+    fabric
+  }
+
+  def findNoOverlappingClaim(claims: Seq[claim], wide: Int, tall: Int): Option[Int] = {
+    var fabric = createClaimsMatrix(claims, wide, tall)
+    claims.foreach { f =>
+      var flag = true
+      for (i <- f.left to f.wide + f.left - 1) {
+        for (j <- f.top to f.tall + f.top - 1) {
+          if (fabric(i)(j) != 1)
+            flag = false
+        }
+      }
+      if (flag) return Some(f.id)
+    }
+    None
   }
 
   def main(args: Array[String]): Unit = {
-    val boxesList = readSales("input.txt")
-    println("Result for part 1: " + fabricOverlap(boxesList, getFabricSize(boxesList)._1, getFabricSize(boxesList)._2))
-    //   println("Result for part 2: " + part2(boxesList))
+    val claims = readClaims("input.txt")
+    val fabricSize = calculateFabricSize(claims)
+    var fabric = createClaimsMatrix(claims, fabricSize._1, fabricSize._2)
+    println("Result for part 1: " + calculateFabricOverlaps(claims, fabricSize._1, fabricSize._2))
+    println("Result for part 2: " + findNoOverlappingClaim(claims, fabricSize._1, fabricSize._2))
+
   }
 }
