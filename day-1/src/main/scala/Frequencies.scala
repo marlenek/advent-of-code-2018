@@ -20,8 +20,6 @@ object Frequencies {
 
     val changesOfFrequency = Source.fromResource("input.txt").getLines().map(_.toInt).toList
     println("Result for part 1: " + frequenciesPart1(changesOfFrequency))
-    val a = System.currentTimeMillis()
-    println("Result for part 2: " + frequenciesPart2(Range(1, 10000000).toList))
-    println(System.currentTimeMillis() -a)
+    println("Result for part 2: " + frequenciesPart2(changesOfFrequency))
   }
 }
