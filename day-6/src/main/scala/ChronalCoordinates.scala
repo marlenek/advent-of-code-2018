@@ -45,7 +45,7 @@ object ChronalCoordinates {
 
   def main(args: Array[String]): Unit = {
 
-    var points = Source.fromResource("test_input.txt").getLines().map(line => Point(line.split(", ")(0).toInt, line.split(", ")(1).toInt)).toList
+    var points = Source.fromResource("input.txt").getLines().map(line => Point(line.split(", ")(0).toInt, line.split(", ")(1).toInt)).toList
     println("Result for part 1: " + getPointWithLargestArea(points))
     //println("Result for part 2: ")
     // 1788 to low :( reddit says 2906
